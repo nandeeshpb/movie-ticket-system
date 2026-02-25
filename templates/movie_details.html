@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - MovieBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    .movie-details-page {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+
+    .movie-details-hero {
+        position: relative;
+        height: 70vh;
+        min-height: 500px;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .movie-details-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .movie-details-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(30px);
+        opacity: 0.4;
+        transform: scale(1.1);
+    }
+
+    .movie-details-bg::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background: linear-gradient(to top, var(--dark-bg) 0%, transparent 100%);
+    }
+
+    .movie-details-content {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 3rem;
+        align-items: end;
+        padding-bottom: 3rem;
+    }
+
+    .movie-details-poster {
+        position: relative;
+    }
+
+    .movie-details-poster img {
+        width: 100%;
+        border-radius: var(--border-radius);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .movie-details-poster::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        background: linear-gradient(135deg, var(--primary-color), transparent);
+        border-radius: var(--border-radius);
+        opacity: 0.3;
+        z-index: -1;
+    }
+
+    .movie-details-info h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .movie-details-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .movie-details-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    .movie-rating-badge {
+        background: rgba(245, 197, 24, 0.2);
+        color: var(--warning);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: 700;
+    }
+
+    .movie-genre-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .movie-genre-tags span {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .movie-description {
+        max-width: 700px;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .movie-details-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .movie-details-actions .btn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    .movie-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+    }
+
+    .info-item {
+        text-align: center;
+    }
+
+    .info-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .showtimes-section {
+        padding: 4rem 0;
+    }
+
+    .showtimes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .showtime-btn {
+        padding: 1rem;
+        background: var(--card-bg);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--border-radius-sm);
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .showtime-btn:hover {
+        border-color: var(--primary-color);
+        background: rgba(229, 9, 20, 0.1);
+    }
+
+    @media (max-width: 992px) {
+        .movie-details-content {
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+        }
+
+        .movie-details-info h1 {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .movie-details-hero {
+            height: auto;
+            min-height: auto;
+            padding: 120px 0 3rem;
+        }
+
+        .movie-details-content {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .movie-details-poster {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .movie-details-meta {
+            justify-content: center;
+        }
+
+        .movie-genre-tags {
+            justify-content: center;
+        }
+
+        .movie-description {
+            text-align: left;
+        }
+
+        .movie-details-actions {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="movie-details-page">
+    <div class="movie-details-hero">
+        <div class="movie-details-bg">
+            <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+        </div>
+        
+        <div class="container">
+            <div class="movie-details-content">
+                <div class="movie-details-poster">
+                    <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                </div>
+                
+                <div class="movie-details-info">
+                    <h1>{{ movie.title }}</h1>
+                    
+                    <div class="movie-details-meta">
+                        <span><i class="fas fa-clock"></i> {{ movie.duration }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ movie.release_date }}</span>
+                        <span class="movie-rating-badge"><i class="fas fa-star"></i> 4.5</span>
+                    </div>
+                    
+                    <div class="movie-genre-tags">
+                        <span>{{ movie.genre }}</span>
+                    </div>
+                    
+                    <p class="movie-description">{{ movie.description }}</p>
+                    
+                    <div class="movie-details-actions">
+                        <a href="{{ url_for('booking', movie_id=str(movie._id)) }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-ticket-alt"></i>
+                            Book Tickets
+                        </a>
+                        {% if movie.trailer_link %}
+                        <a href="{{ movie.trailer_link }}" target="_blank" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-play"></i>
+                            Watch Trailer
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="movie-info-grid">
+            <div class="info-item">
+                <div class="info-label">Director</div>
+                <div class="info-value">Unknown</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Cast</div>
+                <div class="info-value">Various</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Language</div>
+                <div class="info-value">Hindi/English</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ticket Price</div>
+                <div class="info-value" style="color: var(--success);">Rs. {{ movie.ticket_price }}</div>
+            </div>
+        </div>
+        
+        {% if movie.showtimes %}
+        <div class="showtimes-section">
+            <h2 class="section-title">Available Showtimes</h2>
+            <div class="showtimes-grid">
+                {% for showtime in movie.showtimes %}
+                <a href="{{ url_for('booking', movie_id=str(movie._id)) }}?showtime={{ showtime }}" class="showtime-btn">
+                    {{ showtime }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 3rem; text-align: center;">
+            <a href="{{ url_for('movies_list') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Movies
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

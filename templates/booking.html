@@ -1,0 +1,598 @@
+{% extends "base.html" %}
+
+{% block title %}Book Tickets - MovieBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+
+    .booking-header {
+        margin-bottom: 2rem;
+    }
+
+    .booking-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .booking-header p {
+        color: var(--text-muted);
+    }
+
+    .booking-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2rem;
+    }
+
+    .booking-main {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+    }
+
+    .booking-section {
+        margin-bottom: 2rem;
+    }
+
+    .booking-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .date-time-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+
+    .date-btn, .time-btn {
+        padding: 1rem;
+        background: var(--lighter-bg);
+        border: 2px solid transparent;
+        border-radius: var(--border-radius-sm);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .date-btn:hover, .time-btn:hover {
+        border-color: var(--primary-color);
+    }
+
+    .date-btn.selected, .time-btn.selected {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .date-btn .day {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .date-btn .date {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .date-btn.selected .day,
+    .date-btn.selected .date {
+        color: white;
+    }
+
+    /* Seat Layout */
+    .screen {
+        background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1));
+        padding: 1.5rem;
+        text-align: center;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .screen::after {
+        content: '';
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70%;
+        height: 40px;
+        background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+        filter: blur(5px);
+    }
+
+    .screen-title {
+        font-size: 1rem;
+        color: var(--text-muted);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+    }
+
+    .seat-legend {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .legend-seat {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px 8px 12px 12px;
+    }
+
+    .legend-seat.available {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .legend-seat.selected {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .legend-seat.booked {
+        background: var(--text-muted);
+        opacity: 0.5;
+    }
+
+    .legend-seat.vip {
+        border-color: var(--warning);
+    }
+
+    .seats-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 2rem;
+    }
+
+    .seat-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .row-label {
+        width: 25px;
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .seat {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px 8px 12px 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: transparent;
+    }
+
+    .seat:hover:not(.booked):not(.selected) {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.1);
+    }
+
+    .seat.selected {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .seat.booked {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+    .seat.vip {
+        border-color: var(--warning);
+    }
+
+    .seat.vip.selected {
+        background: var(--warning);
+        border-color: var(--warning);
+        color: #000;
+    }
+
+    .seat-gap {
+        width: 20px;
+    }
+
+    /* Booking Summary */
+    .booking-summary {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+
+    .summary-movie {
+        display: flex;
+        gap: 1rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-movie img {
+        width: 80px;
+        height: 110px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .summary-movie-info h4 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-movie-info p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .summary-details {
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+    }
+
+    .summary-row .label {
+        color: var(--text-muted);
+    }
+
+    .summary-row .value {
+        font-weight: 600;
+    }
+
+    .selected-seats {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .selected-seats-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .selected-seats-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .selected-seat {
+        background: var(--primary-color);
+        padding: 0.3rem 0.7rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-total .amount {
+        color: var(--success);
+    }
+
+    .booking-summary .btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .no-selection {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+    }
+
+    @media (max-width: 992px) {
+        .booking-container {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .seat {
+            width: 28px;
+            height: 28px;
+        }
+
+        .seat-legend {
+            gap: 1rem;
+        }
+
+        .legend-item {
+            font-size: 0.75rem;
+        }
+
+        .legend-seat {
+            width: 20px;
+            height: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="booking-page">
+    <div class="container">
+        <div class="booking-header">
+            <h1>Book Tickets</h1>
+            <p>{{ movie.title }} - Select your seats</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('booking', movie_id=movie._id) }}" id="booking-form">
+            <div class="booking-container">
+                <div class="booking-main">
+                    <!-- Date Selection -->
+                    <div class="booking-section">
+                        <h3><i class="fas fa-calendar"></i> Select Date</h3>
+                        <div class="date-time-grid">
+                            {% for date in available_dates %}
+                            <button type="button" class="date-btn {{ 'selected' if loop.first else '' }}" 
+                                    data-date="{{ date }}" onclick="selectDate(this)">
+                                <div class="day">{{ date.strftime('%a') }}</div>
+                                <div class="date">{{ date.day }}</div>
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="show_date" id="show_date" value="{{ available_dates[0] if available_dates else '' }}">
+                    </div>
+                    
+                    <!-- Time Selection -->
+                    <div class="booking-section">
+                        <h3><i class="fas fa-clock"></i> Select Show Time</h3>
+                        <div class="date-time-grid">
+                            {% for time in showtimes %}
+                            <button type="button" class="time-btn {{ 'selected' if loop.first else '' }}" 
+                                    data-time="{{ time }}" onclick="selectTime(this)">
+                                {{ time }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="show_time" id="show_time" value="{{ showtimes[0] if showtimes else '' }}">
+                    </div>
+                    
+                    <!-- Seat Selection -->
+                    <div class="booking-section">
+                        <h3><i class="fas fa-chair"></i> Select Seats</h3>
+                        
+                        <div class="screen">
+                            <div class="screen-title">Screen</div>
+                        </div>
+                        
+                        <div class="seats-container" id="seat-layout">
+                            {% for row in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] %}
+                            <div class="seat-row">
+                                <span class="row-label">{{ row }}</span>
+                                {% for seat in range(1, 11) %}
+                                <button type="button" class="seat {{ 'vip' if row in ['A', 'B'] else '' }}" 
+                                        data-seat="{{ row }}{{ seat }}" 
+                                        onclick="toggleSeat(this)"
+                                        title="{{ row }}{{ seat }}">
+                                </button>
+                                {% endfor %}
+                                <span class="row-label">{{ row }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="seat-legend">
+                            <div class="legend-item">
+                                <div class="legend-seat available"></div>
+                                <span>Available</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat selected"></div>
+                                <span>Selected</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat booked"></div>
+                                <span>Booked</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-seat vip"></div>
+                                <span>VIP</span>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="seats" id="selected-seats" value="">
+                    </div>
+                </div>
+                
+                <!-- Booking Summary -->
+                <div class="booking-summary">
+                    <div class="summary-movie">
+                        <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                        <div class="summary-movie-info">
+                            <h4>{{ movie.title }}</h4>
+                            <p>{{ movie.genre }} | {{ movie.duration }}</p>
+                            <p class="ticket-price-value" style="display: none;">{{ movie.ticket_price }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span class="label">Date</span>
+                            <span class="value" id="summary-date">{{ available_dates[0].strftime('%d %b %Y') if available_dates else '-' }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Time</span>
+                            <span class="value" id="summary-time">{{ showtimes[0] if showtimes else '-' }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Ticket Price</span>
+                            <span class="value">Rs. {{ movie.ticket_price }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="selected-seats">
+                        <div class="selected-seats-label">Selected Seats</div>
+                        <div class="selected-seats-list" id="selected-seats-display">
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">No seats selected</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span class="amount" id="total-price">Rs. 0</span>
+                    </div>
+                    
+                    {% if current_user.is_authenticated %}
+                    <button type="submit" class="btn btn-primary" id="confirm-booking">
+                        <i class="fas fa-check"></i>
+                        Confirm Booking
+                    </button>
+                    {% else %}
+                    <a href="{{ url_for('login') }}?next={{ request.path }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login to Book
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let selectedSeats = [];
+    const ticketPrice = {{ movie.ticket_price|tojson }};
+
+    function selectDate(btn) {
+        document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('show_date').value = btn.dataset.date;
+        document.getElementById('summary-date').textContent = btn.dataset.date;
+        
+        // Load booked seats for this date
+        loadBookedSeats();
+    }
+
+    function selectTime(btn) {
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('show_time').value = btn.dataset.time;
+        document.getElementById('summary-time').textContent = btn.dataset.time;
+        
+        // Load booked seats for this time
+        loadBookedSeats();
+    }
+
+    function toggleSeat(seat) {
+        if (seat.classList.contains('booked')) return;
+        
+        const seatId = seat.dataset.seat;
+        
+        if (seat.classList.contains('selected')) {
+            seat.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(s => s !== seatId);
+        } else {
+            seat.classList.add('selected');
+            selectedSeats.push(seatId);
+        }
+        
+        updateSeatsDisplay();
+    }
+
+    function updateSeatsDisplay() {
+        document.getElementById('selected-seats').value = JSON.stringify(selectedSeats);
+        
+        const display = document.getElementById('selected-seats-display');
+        if (selectedSeats.length === 0) {
+            display.innerHTML = '<span style="color: var(--text-muted); font-size: 0.9rem;">No seats selected</span>';
+        } else {
+            display.innerHTML = selectedSeats.map(seat => 
+                `<span class="selected-seat">${seat}</span>`
+            ).join('');
+        }
+        
+        const total = selectedSeats.length * ticketPrice;
+        document.getElementById('total-price').textContent = `Rs. ${total}`;
+    }
+
+    function loadBookedSeats() {
+        const movieId = '{{ movie._id }}';
+        const date = document.getElementById('show_date').value;
+        const time = document.getElementById('show_time').value;
+        
+        if (!date || !time) return;
+        
+        fetch(`/api/get_booked_seats/${movieId}/${date}/${time}`)
+            .then(response => response.json())
+            .then(data => {
+                document.querySelectorAll('.seat').forEach(seat => {
+                    const seatId = seat.dataset.seat;
+                    if (data.seats.includes(seatId)) {
+                        seat.classList.add('booked');
+                        seat.classList.remove('selected');
+                    } else {
+                        seat.classList.remove('booked');
+                    }
+                });
+                
+                // Remove booked seats from selected
+                selectedSeats = selectedSeats.filter(s => !data.seats.includes(s));
+                updateSeatsDisplay();
+            })
+            .catch(error => console.error('Error loading seats:', error));
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBookedSeats();
+    });
+</script>
+{% endblock %}

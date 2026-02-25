@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}All Bookings - MovieBook Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bookings-page { padding: 100px 0 50px; min-height: 100vh; background: var(--dark-bg); }
+    .page-header { padding: 2rem 0; margin-bottom: 2rem; }
+    .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .page-header p { color: var(--text-muted); margin: 0; }
+    .bookings-table-container { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; }
+    .table-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 1rem 1.5rem; text-align: left; }
+    th { background: rgba(255,255,255,0.05); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; }
+    tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; }
+    .user-email { font-size: 0.85rem; color: var(--text-muted); }
+    .status-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .status-badge.confirmed { background: rgba(70,211,105,0.15); color: var(--success); }
+    .status-badge.cancelled { background: rgba(229,9,20,0.15); color: var(--error); }
+    .empty-state { text-align: center; padding: 3rem; }
+    .empty-state i { font-size: 3rem; color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bookings-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-ticket-alt"></i> All Bookings</h1>
+            <p>View all movie bookings in the system</p>
+        </div>
+        
+        <div class="bookings-table-container">
+            <div class="table-header">
+                <h3>Bookings</h3>
+                <span>{{ bookings|length }} bookings</span>
+            </div>
+            
+            {% if bookings %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>User</th>
+                        <th>Movie</th>
+                        <th>Date & Time</th>
+                        <th>Seats</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td><code>{{ booking.booking_id }}</code></td>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">{{ booking.user_name }}</span>
+                                <span class="user-email">{{ booking.user_email }}</span>
+                            </div>
+                        </td>
+                        <td>{{ booking.movie_title }}</td>
+                        <td>{{ booking.show_date }}<br>{{ booking.show_time }}</td>
+                        <td>{{ booking.seats|join(', ') }}</td>
+                        <td>Rs. {{ booking.total_amount }}</td>
+                        <td>
+                            <span class="status-badge {{ booking.status }}">{{ booking.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-ticket-alt"></i>
+                <p>No bookings found</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

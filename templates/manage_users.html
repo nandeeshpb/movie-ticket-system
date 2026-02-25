@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - MovieBook Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .manage-users-page { padding: 100px 0 50px; min-height: 100vh; background: var(--dark-bg); }
+    .page-header { padding: 2rem 0; margin-bottom: 2rem; }
+    .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .page-header p { color: var(--text-muted); margin: 0; }
+    .users-table-container { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; }
+    .table-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .table-header h3 { margin: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 1rem 1.5rem; text-align: left; }
+    th { background: rgba(255,255,255,0.05); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; }
+    tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; }
+    .user-email { font-size: 0.85rem; color: var(--text-muted); }
+    .status-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .status-badge.active { background: rgba(70,211,105,0.15); color: var(--success); }
+    .status-badge.inactive { background: rgba(229,9,20,0.15); color: var(--error); }
+    .action-btns { display: flex; gap: 0.5rem; }
+    .empty-state { text-align: center; padding: 3rem; }
+    .empty-state i { font-size: 3rem; color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="manage-users-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-users"></i> Manage Users</h1>
+            <p>View and manage registered users</p>
+        </div>
+        
+        <div class="users-table-container">
+            <div class="table-header">
+                <h3>All Users</h3>
+                <span>{{ users|length }} users</span>
+            </div>
+            
+            {% if users %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Phone</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <span class="user-name">{{ user.name }}</span>
+                                <span class="user-email">{{ user.email }}</span>
+                            </div>
+                        </td>
+                        <td>{{ user.phone }}</td>
+                        <td>{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}</td>
+                        <td>
+                            <span class="status-badge {{ 'active' if user.is_active else 'inactive' }}">
+                                {{ 'Active' if user.is_active else 'Inactive' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="{{ url_for('toggle_user_status', user_id=str(user._id)) }}" 
+                                   class="btn btn-sm {{ 'btn-secondary' if user.is_active else 'btn-success' }}">
+                                    {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <p>No users found</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

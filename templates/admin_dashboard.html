@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - MovieBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+
+    .admin-header {
+        padding: 2rem 0;
+        background: linear-gradient(135deg, var(--card-bg) 0%, var(--darker-bg) 100%);
+        margin-bottom: 2rem;
+    }
+
+    .admin-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .admin-header p {
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+
+    .admin-sidebar {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu li {
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius-sm);
+        color: var(--text-secondary);
+        transition: var(--transition);
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    .sidebar-menu a.active {
+        border-left: 3px solid var(--primary-color);
+    }
+
+    .sidebar-menu i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .admin-content {
+        min-width: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.users { background: rgba(0, 168, 232, 0.15); color: var(--secondary-color); }
+    .stat-icon.movies { background: rgba(229, 9, 20, 0.15); color: var(--primary-color); }
+    .stat-icon.bookings { background: rgba(70, 211, 105, 0.15); color: var(--success); }
+    .stat-icon.revenue { background: rgba(245, 197, 24, 0.15); color: var(--warning); }
+
+    .stat-info h3 {
+        font-size: 2rem;
+        margin: 0;
+    }
+
+    .stat-info p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .admin-section {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-header h3 {
+        margin: 0;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+    }
+
+    th {
+        background: rgba(255, 255, 255, 0.05);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+
+    tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    td {
+        font-size: 0.95rem;
+    }
+
+    .movie-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .movie-cell img {
+        width: 50px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btns a,
+    .action-btns button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-badge.active { background: rgba(70, 211, 105, 0.15); color: var(--success); }
+    .status-badge.inactive { background: rgba(229, 9, 20, 0.15); color: var(--error); }
+    .status-badge.confirmed { background: rgba(70, 211, 105, 0.15); color: var(--success); }
+    .status-badge.cancelled { background: rgba(229, 9, 20, 0.15); color: var(--error); }
+
+    .user-cell {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-weight: 600;
+    }
+
+    .user-email {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 992px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+            position: static;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">
+        <div class="container">
+            <h1><i class="fas fa-cog"></i> Admin Dashboard</h1>
+            <p>Manage movies, users, and bookings</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="admin-grid">
+            <aside class="admin-sidebar">
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ url_for('admin_dashboard') }}" class="active">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('add_movie') }}">
+                            <i class="fas fa-plus"></i> Add Movie
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('movies_list') }}">
+                            <i class="fas fa-film"></i> All Movies
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('manage_users') }}">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('all_bookings') }}">
+                            <i class="fas fa-ticket-alt"></i> All Bookings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('index') }}">
+                            <i class="fas fa-arrow-left"></i> Back to Site
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            
+            <main class="admin-content">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ total_users }}</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon movies">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ total_movies }}</h3>
+                            <p>Total Movies</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bookings">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ total_bookings }}</h3>
+                            <p>Total Bookings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon revenue">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Rs. {{ total_revenue }}</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Bookings -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-clock"></i> Recent Bookings</h3>
+                        <a href="{{ url_for('all_bookings') }}" class="btn btn-sm btn-secondary">View All</a>
+                    </div>
+                    
+                    {% if recent_bookings %}
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>User</th>
+                                    <th>Movie</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in recent_bookings %}
+                                <tr>
+                                    <td><code>{{ booking.booking_id }}</code></td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <span class="user-name">{{ booking.user_name }}</span>
+                                            <span class="user-email">{{ booking.user_email }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ booking.movie_title }}</td>
+                                    <td>{{ booking.show_date }}</td>
+                                    <td>Rs. {{ booking.total_amount }}</td>
+                                    <td>
+                                        <span class="status-badge {{ booking.status }}">{{ booking.status }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-ticket-alt"></i>
+                        <p>No bookings yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div style="padding: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <a href="{{ url_for('add_movie') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add New Movie
+                        </a>
+                        <a href="{{ url_for('manage_users') }}" class="btn btn-secondary">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                        <a href="{{ url_for('movies_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-film"></i> View All Movies
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}

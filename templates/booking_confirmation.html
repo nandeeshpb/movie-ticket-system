@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmed - MovieBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+
+    .confirmation-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .confirmation-icon {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(70, 211, 105, 0.15);
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 2rem;
+        animation: scaleIn 0.5s ease-out;
+    }
+
+    .confirmation-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .confirmation-subtitle {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    .booking-id {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-sm);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        letter-spacing: 2px;
+        margin-bottom: 2rem;
+    }
+
+    .ticket-card {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ticket-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 80% 20%, rgba(229, 9, 20, 0.1) 0%, transparent 50%);
+    }
+
+    .ticket-movie {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ticket-movie img {
+        width: 100px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .ticket-movie-info h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .ticket-movie-info p {
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .ticket-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ticket-detail {
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .ticket-detail-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .ticket-detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .ticket-seats {
+        grid-column: 1 / -1;
+    }
+
+    .ticket-seats-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .ticket-seat {
+        background: var(--primary-color);
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+
+    .ticket-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        position: relative;
+        z-index: 1;
+    }
+
+    .ticket-total-label {
+        font-size: 1rem;
+        color: var(--text-muted);
+    }
+
+    .ticket-total-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--success);
+    }
+
+    .qr-section {
+        margin: 2rem 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .qr-section h4 {
+        margin-bottom: 1rem;
+    }
+
+    .qr-code {
+        display: inline-block;
+        padding: 1rem;
+        background: white;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .qr-code img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .confirmation-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .confirmation-actions .btn {
+        padding: 1rem 2rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .status-badge.confirmed {
+        background: rgba(70, 211, 105, 0.2);
+        color: var(--success);
+    }
+
+    @media (max-width: 480px) {
+        .confirmation-container {
+            padding: 2rem 1.5rem;
+        }
+
+        .ticket-card {
+            padding: 1.5rem;
+        }
+
+        .ticket-movie {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .ticket-details {
+            grid-template-columns: 1fr;
+        }
+
+        .confirmation-actions {
+            flex-direction: column;
+        }
+
+        .confirmation-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-page">
+    <div class="container">
+        <div class="confirmation-container">
+            <div class="confirmation-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <span class="status-badge confirmed">{{ booking.status }}</span>
+            
+            <h1 class="confirmation-title">Booking Confirmed!</h1>
+            <p class="confirmation-subtitle">Your tickets have been booked successfully</p>
+            
+            <div class="booking-id">{{ booking.booking_id }}</div>
+            
+            <div class="ticket-card">
+                <div class="ticket-movie">
+                    <!-- Movie poster would go here -->
+                    <div class="ticket-movie-info">
+                        <h3>{{ booking.movie_title }}</h3>
+                        <p>Show Details</p>
+                    </div>
+                </div>
+                
+                <div class="ticket-details">
+                    <div class="ticket-detail">
+                        <div class="ticket-detail-label">Date</div>
+                        <div class="ticket-detail-value">{{ booking.show_date }}</div>
+                    </div>
+                    <div class="ticket-detail">
+                        <div class="ticket-detail-label">Time</div>
+                        <div class="ticket-detail-value">{{ booking.show_time }}</div>
+                    </div>
+                    <div class="ticket-detail">
+                        <div class="ticket-detail-label">Tickets</div>
+                        <div class="ticket-detail-value">{{ booking.seat_count }}</div>
+                    </div>
+                    <div class="ticket-detail">
+                        <div class="ticket-detail-label">Price per Ticket</div>
+                        <div class="ticket-detail-value">Rs. {{ booking.ticket_price }}</div>
+                    </div>
+                    <div class="ticket-detail ticket-seats">
+                        <div class="ticket-detail-label">Seats</div>
+                        <div class="ticket-seats-list">
+                            {% for seat in booking.seats %}
+                            <span class="ticket-seat">{{ seat }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-total">
+                    <span class="ticket-total-label">Total Paid</span>
+                    <span class="ticket-total-amount">Rs. {{ booking.total_amount }}</span>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <h4>Scan for Entry</h4>
+                <div class="qr-code">
+                    <img src="data:image/png;base64,{{ qr_code|b64encode }}" alt="QR Code">
+                </div>
+            </div>
+            
+            <div class="confirmation-actions">
+                <a href="{{ url_for('download_ticket', booking_id=booking.booking_id) }}" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Download Ticket
+                </a>
+                <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-user"></i>
+                    My Bookings
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,613 @@
+{% extends "base.html" %}
+
+{% block title %}MovieBook - Book Your Favorite Movies Online{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .hero {
+        position: relative;
+        height: 100vh;
+        min-height: 700px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .hero-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .hero-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+
+    .hero-slide.active {
+        opacity: 1;
+    }
+
+    .hero-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            to right,
+            rgba(0, 0, 0, 0.95) 0%,
+            rgba(0, 0, 0, 0.7) 40%,
+            rgba(0, 0, 0, 0.3) 100%
+        );
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+    }
+
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-title span {
+        color: var(--primary-color);
+    }
+
+    .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .hero-rating {
+        background: rgba(245, 197, 24, 0.2);
+        color: var(--warning);
+        padding: 0.3rem 0.8rem;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+
+    .hero-description {
+        font-size: 1.15rem;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        max-width: 550px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-buttons .btn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    .btn-play {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-play:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Slider Navigation */
+    .slider-nav {
+        position: absolute;
+        bottom: 150px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.5rem;
+        z-index: 10;
+    }
+
+    .slider-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .slider-dot.active {
+        background: var(--primary-color);
+        transform: scale(1.2);
+    }
+
+    /* Featured Movies Section */
+    .featured-section {
+        padding: 80px 0;
+        background: var(--darker-bg);
+    }
+
+    .movies-scroll {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding: 1rem 0;
+        scrollbar-width: none;
+    }
+
+    .movies-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .movie-card-mini {
+        flex: 0 0 200px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .movie-card-mini:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow);
+    }
+
+    .movie-card-mini img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .movie-card-mini-info {
+        padding: 1rem;
+    }
+
+    .movie-card-mini-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .movie-card-mini-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Why Choose Us Section */
+    .features-section {
+        padding: 80px 0;
+        background: var(--dark-bg);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2.5rem;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--gradient-end));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin: 0 auto 1.5rem;
+    }
+
+    .feature-title {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-description {
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 30% 50%, rgba(229, 9, 20, 0.1) 0%, transparent 50%);
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .cta-title {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-description {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.8rem;
+        }
+
+        .hero-content {
+            text-align: center;
+        }
+
+        .hero-meta {
+            justify-content: center;
+        }
+
+        .hero-buttons {
+            justify-content: center;
+        }
+
+        .slider-nav {
+            bottom: 100px;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-slider">
+        {% if featured_movies %}
+            {% for movie in featured_movies[:5] %}
+            <div class="hero-slide {{ 'active' if loop.first else '' }}">
+                <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="hero-slide active">
+                <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1920" alt="Cinema">
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="hero-overlay"></div>
+    
+    <div class="container">
+        <div class="hero-content">
+            {% if featured_movies and featured_movies[0] %}
+                <span class="hero-badge">Now Showing</span>
+                <h1 class="hero-title">{{ featured_movies[0].title }}</h1>
+                <div class="hero-meta">
+                    <span><i class="fas fa-clock"></i> {{ featured_movies[0].duration }}</span>
+                    <span><i class="fas fa-film"></i> {{ featured_movies[0].genre }}</span>
+                    <span class="hero-rating"><i class="fas fa-star"></i> 4.5</span>
+                </div>
+                <p class="hero-description">{{ featured_movies[0].description[:200] }}...</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('booking', movie_id=str(featured_movies[0]._id)) }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-ticket-alt"></i>
+                        Book Now
+                    </a>
+                    <a href="{{ url_for('movie_details', movie_id=str(featured_movies[0]._id)) }}" class="btn btn-play btn-lg">
+                        <i class="fas fa-play"></i>
+                        View Details
+                    </a>
+                </div>
+            {% else %}
+                <span class="hero-badge">Welcome to</span>
+                <h1 class="hero-title">Movie<span>Book</span></h1>
+                <div class="hero-meta">
+                    <span><i class="fas fa-film"></i> Latest Movies</span>
+                    <span class="hero-rating"><i class="fas fa-star"></i> 4.5</span>
+                </div>
+                <p class="hero-description">Book your favorite movie tickets online. Experience the magic of cinema with seamless booking and exclusive deals.</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('movies_list') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-film"></i>
+                        Browse Movies
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Slider Navigation -->
+    <div class="slider-nav">
+        {% if featured_movies %}
+            {% for movie in featured_movies[:5] %}
+            <button class="slider-dot {{ 'active' if loop.first else '' }}" data-slide="{{ loop.index0 }}"></button>
+            {% endfor %}
+        {% endif %}
+    </div>
+</section>
+
+<!-- Featured Movies -->
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Movies</h2>
+            <a href="{{ url_for('movies_list') }}" class="btn btn-secondary">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="movies-scroll">
+            {% for movie in featured_movies %}
+            <a href="{{ url_for('movie_details', movie_id=str(movie._id)) }}" class="movie-card-mini">
+                <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                <div class="movie-card-mini-info">
+                    <h4 class="movie-card-mini-title">{{ movie.title }}</h4>
+                    <div class="movie-card-mini-meta">
+                        <span>{{ movie.genre }}</span>
+                        <span>Rs. {{ movie.ticket_price }}</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- All Movies Grid -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Latest Movies</h2>
+            <a href="{{ url_for('movies_list') }}" class="btn btn-secondary">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="movies-grid">
+            {% for movie in movies[:8] %}
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                    <div class="movie-overlay">
+                        <a href="{{ url_for('booking', movie_id=str(movie._id)) }}" class="btn btn-primary">
+                            <i class="fas fa-ticket-alt"></i> Book Now
+                        </a>
+                    </div>
+                    <span class="movie-badge">{{ movie.genre }}</span>
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">{{ movie.title }}</h3>
+                    <div class="movie-meta">
+                        <span><i class="fas fa-clock"></i> {{ movie.duration }}</span>
+                        <span class="movie-rating"><i class="fas fa-star"></i> 4.5</span>
+                    </div>
+                    <div class="movie-actions">
+                        <a href="{{ url_for('movie_details', movie_id=str(movie._id)) }}" class="btn btn-secondary btn-sm">
+                            Details
+                        </a>
+                        <a href="{{ url_for('booking', movie_id=str(movie._id)) }}" class="btn btn-primary btn-sm">
+                            Book
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center" style="grid-column: 1/-1;">
+                <p class="text-muted">No movies available at the moment. Check back soon!</p>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('add_movie') }}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus"></i> Add Movie
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Movies -->
+{% if upcoming_movies %}
+<section class="section" style="background: var(--darker-bg);">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Coming Soon</h2>
+        </div>
+        
+        <div class="movies-grid">
+            {% for movie in upcoming_movies %}
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                    <div class="movie-overlay">
+                        <a href="{{ url_for('movie_details', movie_id=str(movie._id)) }}" class="btn btn-secondary">
+                            <i class="fas fa-info-circle"></i> Know More
+                        </a>
+                    </div>
+                    <span class="movie-badge" style="background: var(--secondary-color);">Coming Soon</span>
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">{{ movie.title }}</h3>
+                    <div class="movie-meta">
+                        <span><i class="fas fa-calendar"></i> {{ movie.release_date }}</span>
+                        <span>{{ movie.genre }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Why Choose MovieBook?</h2>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <h3 class="feature-title">Easy Booking</h3>
+                <p class="feature-description">Book your favorite movie tickets in just a few clicks. Simple and hassle-free booking process.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chair"></i>
+                </div>
+                <h3 class="feature-title">Choose Your Seats</h3>
+                <p class="feature-description">Select your preferred seats from our interactive seat layout. Visualize your booking experience.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="feature-title">Mobile Tickets</h3>
+                <p class="feature-description">Get your tickets delivered to your phone. No need to print - just show your QR code at the theater.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <h3 class="feature-title">Exclusive Deals</h3>
+                <p class="feature-description">Get access to special offers, discounts, and promotions on movie tickets.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Experience the Magic?</h2>
+            <p class="cta-description">Join thousands of movie lovers who trust MovieBook for their cinema experience.</p>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus"></i>
+                Get Started Free
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Hero Slider
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        let currentSlide = 0;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+        
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+        
+        // Auto-advance every 5 seconds
+        if (slides.length > 1) {
+            setInterval(nextSlide, 5000);
+        }
+    });
+</script>
+{% endblock %}

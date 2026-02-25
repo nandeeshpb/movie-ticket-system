@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Add Movie - MovieBook Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .add-movie-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+
+    .add-movie-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2.5rem;
+    }
+
+    .add-movie-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .add-movie-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .add-movie-header p {
+        color: var(--text-muted);
+    }
+
+    .movie-form .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .movie-form .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .movie-form .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .movie-form .form-control,
+    .movie-form select,
+    .movie-form textarea {
+        width: 100%;
+    }
+
+    .movie-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .showtimes-input {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .showtimes-input input {
+        flex: 1;
+        padding: 0.5rem;
+    }
+
+    .showtimes-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .showtime-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(229, 9, 20, 0.2);
+        color: var(--primary-color);
+        padding: 0.3rem 0.7rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+    }
+
+    .showtime-tag button {
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 0;
+        font-size: 0.9rem;
+    }
+
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload input[type="file"] {
+        display: none;
+    }
+
+    .file-upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .file-upload-label:hover {
+        border-color: var(--primary-color);
+        background: rgba(229, 9, 20, 0.05);
+    }
+
+    .file-upload-label i {
+        font-size: 2.5rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .file-upload-label span {
+        color: var(--text-muted);
+    }
+
+    .image-preview {
+        margin-top: 1rem;
+        display: none;
+    }
+
+    .image-preview img {
+        max-width: 200px;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-actions .btn {
+        padding: 0.75rem 2rem;
+    }
+
+    @media (max-width: 576px) {
+        .add-movie-container {
+            padding: 1.5rem;
+        }
+
+        .movie-form .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="add-movie-page">
+    <div class="container">
+        <div class="add-movie-container">
+            <div class="add-movie-header">
+                <h1><i class="fas fa-film"></i> Add New Movie</h1>
+                <p>Fill in the details to add a new movie</p>
+            </div>
+            
+            <form method="POST" enctype="multipart/form-data" class="movie-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="title" class="form-label">Movie Title *</label>
+                        <input type="text" id="title" name="title" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="genre" class="form-label">Genre *</label>
+                        <select id="genre" name="genre" class="form-control form-select" required>
+                            <option value="">Select Genre</option>
+                            <option value="Action">Action</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Animation">Animation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration" class="form-label">Duration *</label>
+                        <input type="text" id="duration" name="duration" class="form-control" 
+                               placeholder="e.g., 2h 30min" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="release_date" class="form-label">Release Date</label>
+                        <input type="date" id="release_date" name="release_date" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ticket_price" class="form-label">Ticket Price (Rs.)</label>
+                        <input type="number" id="ticket_price" name="ticket_price" class="form-control" 
+                               value="300" min="0" step="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trailer_link" class="form-label">Trailer Link</label>
+                        <input type="url" id="trailer_link" name="trailer_link" class="form-control" 
+                               placeholder="https://youtube.com/...">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label">Show Times</label>
+                        <div class="showtimes-input">
+                            <input type="time" id="new-showtime" class="form-control">
+                            <button type="button" class="btn btn-secondary" onclick="addShowtime()">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                        <div class="showtimes-list" id="showtimes-list"></div>
+                        <input type="hidden" name="showtimes" id="showtimes" value="">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" name="description" class="form-control" 
+                                  rows="4" placeholder="Movie description..."></textarea>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label">Movie Poster</label>
+                        <div class="file-upload">
+                            <input type="file" id="poster" name="poster" accept="image/*" 
+                                   onchange="previewImage(this)">
+                            <label for="poster" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload poster</span>
+                            </label>
+                        </div>
+                        <div class="image-preview" id="image-preview">
+                            <img id="preview-img" src="" alt="Preview">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Movie
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let showtimes = [];
+
+    function addShowtime() {
+        const input = document.getElementById('new-showtime');
+        const time = input.value;
+        
+        if (time && !showtimes.includes(time)) {
+            showtimes.push(time);
+            updateShowtimesDisplay();
+            input.value = '';
+        }
+    }
+
+    function removeShowtime(time) {
+        showtimes = showtimes.filter(s => s !== time);
+        updateShowtimesDisplay();
+    }
+
+    function updateShowtimesDisplay() {
+        const list = document.getElementById('showtimes-list');
+        const input = document.getElementById('showtimes');
+        
+        list.innerHTML = showtimes.map(time => `
+            <span class="showtime-tag">
+                ${time}
+                <button type="button" onclick="removeShowtime('${time}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </span>
+        `).join('');
+        
+        input.value = JSON.stringify(showtimes);
+    }
+
+    function previewImage(input) {
+        const preview = document.getElementById('image-preview');
+        const img = document.getElementById('preview-img');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}
