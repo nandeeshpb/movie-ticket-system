@@ -63,7 +63,7 @@
                             </div>
                         </td>
                         <td>{{ user.phone }}</td>
-                        <td>{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}</td>
+                        <td>{{ user.created_at|format_date if user.created_at else 'N/A' }}</td>
                         <td>
                             <span class="status-badge {{ 'active' if user.is_active else 'inactive' }}">
                                 {{ 'Active' if user.is_active else 'Inactive' }}
@@ -71,9 +71,9 @@
                         </td>
                         <td>
                             <div class="action-btns">
-                                <a href="{{ url_for('toggle_user_status', user_id=str(user._id)) }}" 
-                                   class="btn btn-sm {{ 'btn-secondary' if user.is_active else 'btn-success' }}">
-                                    {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                <a href="{{ url_for('toggle_user_status', user_id=user['_id']) }}" 
+                                   class="btn btn-sm {{ 'btn-secondary' if user.get('is_active', True) else 'btn-success' }}">
+                                    {{ 'Deactivate' if user.get('is_active', True) else 'Activate' }}
                                 </a>
                             </div>
                         </td>

@@ -265,25 +265,25 @@
                             <span><i class="fas fa-clock"></i> {{ booking.show_time }}</span>
                             <span><i class="fas fa-chair"></i> {{ booking.seats|join(', ') }}</span>
                             <span><i class="fas fa-rupee-sign"></i> {{ booking.total_amount }}</span>
-                            <span class="booking-id">{{ booking.booking_id }}</span>
+                            <span class="booking-id">{{ booking['booking_id'] }}</span>
                         </div>
-                        <span class="booking-status {{ booking.status }}">{{ booking.status }}</span>
+                        <span class="booking-status {{ booking['status'] }}">{{ booking['status'] }}</span>
                     </div>
                     <div class="booking-actions">
-                        {% if booking.status == 'confirmed' %}
-                        <a href="{{ url_for('booking_confirmation', booking_id=booking.booking_id) }}" class="btn btn-sm btn-primary">
+                        {% if booking['status'] == 'confirmed' %}
+                        <a href="{{ url_for('booking_confirmation', booking_id=booking['booking_id']) }}" class="btn btn-sm btn-primary">
                             View Ticket
                         </a>
-                        <a href="{{ url_for('download_ticket', booking_id=booking.booking_id) }}" class="btn btn-sm btn-secondary">
+                        <a href="{{ url_for('download_ticket', booking_id=booking['booking_id']) }}" class="btn btn-sm btn-secondary">
                             Download
                         </a>
-                        <a href="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}" 
+                        <a href="{{ url_for('cancel_booking', booking_id=booking['booking_id']) }}" 
                            class="btn btn-sm btn-secondary"
                            onclick="return confirm('Are you sure you want to cancel this booking?')">
                             Cancel
                         </a>
                         {% else %}
-                        <a href="{{ url_for('booking_confirmation', booking_id=booking.booking_id) }}" class="btn btn-sm btn-secondary">
+                        <a href="{{ url_for('booking_confirmation', booking_id=booking['booking_id']) }}" class="btn btn-sm btn-secondary">
                             View Details
                         </a>
                         {% endif %}

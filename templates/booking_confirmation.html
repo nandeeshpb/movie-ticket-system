@@ -305,12 +305,12 @@
             <div class="qr-section">
                 <h4>Scan for Entry</h4>
                 <div class="qr-code">
-                    <img src="data:image/png;base64,{{ qr_code|b64encode }}" alt="QR Code">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
                 </div>
             </div>
             
             <div class="confirmation-actions">
-                <a href="{{ url_for('download_ticket', booking_id=booking.booking_id) }}" class="btn btn-primary">
+                <a href="{{ url_for('download_ticket', booking_id=booking['booking_id']) }}" class="btn btn-primary">
                     <i class="fas fa-download"></i>
                     Download Ticket
                 </a>

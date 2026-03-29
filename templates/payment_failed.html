@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Failed - MovieBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-failed-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+
+    .failed-container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .failed-icon {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(229, 9, 20, 0.15);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 2rem;
+    }
+
+    .failed-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .failed-message {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .failed-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-retry {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--primary-color) 0%, #b2070f 100%);
+        border: none;
+        border-radius: var(--border-radius);
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-retry:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
+    }
+
+    .btn-home {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius);
+        color: var(--text-color);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-home:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .help-text {
+        margin-top: 2rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .help-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .help-text a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-failed-page">
+    <div class="container">
+        <div class="failed-container">
+            <div class="failed-icon">
+                <i class="fas fa-times"></i>
+            </div>
+
+            <h2 class="failed-title">Payment Failed</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <p class="failed-message">
+                We're sorry, but your payment could not be processed. 
+                Your seats have been released and no booking has been made.
+            </p>
+
+            <div class="failed-actions">
+                <a href="{{ url_for('movies_list') }}" class="btn-retry">
+                    <i class="fas fa-redo"></i> Try Again
+                </a>
+                <a href="{{ url_for('index') }}" class="btn-home">
+                    <i class="fas fa-home"></i> Go to Home
+                </a>
+            </div>
+
+            <p class="help-text">
+                Need help? <a href="#">Contact our support team</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

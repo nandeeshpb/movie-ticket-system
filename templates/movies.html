@@ -192,7 +192,7 @@
                 <div class="movie-poster">
                     <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
                     <div class="movie-overlay">
-                        <a href="{{ url_for('booking', movie_id=str(movie._id)) }}" class="btn btn-primary">
+                        <a href="{{ url_for('booking', movie_id=movie['_id']) }}" class="btn btn-primary">
                             <i class="fas fa-ticket-alt"></i> Book Now
                         </a>
                     </div>
@@ -202,17 +202,17 @@
                     <h3 class="movie-title">{{ movie.title }}</h3>
                     <div class="movie-meta">
                         <span><i class="fas fa-clock"></i> {{ movie.duration }}</span>
-                        <span><i class="fas fa-calendar"></i> {{ movie.release_date }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ movie.release_date | format_date }}</span>
                     </div>
                     <div class="movie-meta">
                         <span class="movie-rating"><i class="fas fa-star"></i> 4.5</span>
                         <span style="color: var(--success);">Rs. {{ movie.ticket_price }}</span>
                     </div>
                     <div class="movie-actions">
-                        <a href="{{ url_for('movie_details', movie_id=str(movie._id)) }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ url_for('movie_details', movie_id=movie['_id']) }}" class="btn btn-secondary btn-sm">
                             Details
                         </a>
-                        <a href="{{ url_for('booking', movie_id=str(movie._id)) }}" class="btn btn-primary btn-sm">
+                        <a href="{{ url_for('booking', movie_id=movie['_id']) }}" class="btn btn-primary btn-sm">
                             Book
                         </a>
                     </div>

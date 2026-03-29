@@ -139,80 +139,90 @@
             
             <form method="POST" enctype="multipart/form-data" class="movie-form">
                 <div class="current-poster">
-                    <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                    <img src="{{ url_for('static', filename='uploads/' + movie.get('poster', 'default_movie.jpg')) }}" 
+                         alt="{{ movie.get('title', 'Movie') }}">
                 </div>
                 
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="title" class="form-label">Movie Title *</label>
                         <input type="text" id="title" name="title" class="form-control" 
-                               value="{{ movie.title }}" required>
+                               value="{{ movie.get('title', '') }}" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="genre" class="form-label">Genre *</label>
                         <select id="genre" name="genre" class="form-control form-select" required>
-                            <option value="Action" {{ 'selected' if movie.genre == 'Action' else '' }}>Action</option>
-                            <option value="Comedy" {{ 'selected' if movie.genre == 'Comedy' else '' }}>Comedy</option>
-                            <option value="Drama" {{ 'selected' if movie.genre == 'Drama' else '' }}>Drama</option>
-                            <option value="Thriller" {{ 'selected' if movie.genre == 'Thriller' else '' }}>Thriller</option>
-                            <option value="Romance" {{ 'selected' if movie.genre == 'Romance' else '' }}>Romance</option>
-                            <option value="Horror" {{ 'selected' if movie.genre == 'Horror' else '' }}>Horror</option>
-                            <option value="Sci-Fi" {{ 'selected' if movie.genre == 'Sci-Fi' else '' }}>Sci-Fi</option>
-                            <option value="Animation" {{ 'selected' if movie.genre == 'Animation' else '' }}>Animation</option>
+                            <option value="Action" {{ 'selected' if movie.get('genre') == 'Action' else '' }}>Action</option>
+                            <option value="Comedy" {{ 'selected' if movie.get('genre') == 'Comedy' else '' }}>Comedy</option>
+                            <option value="Drama" {{ 'selected' if movie.get('genre') == 'Drama' else '' }}>Drama</option>
+                            <option value="Thriller" {{ 'selected' if movie.get('genre') == 'Thriller' else '' }}>Thriller</option>
+                            <option value="Romance" {{ 'selected' if movie.get('genre') == 'Romance' else '' }}>Romance</option>
+                            <option value="Horror" {{ 'selected' if movie.get('genre') == 'Horror' else '' }}>Horror</option>
+                            <option value="Sci-Fi" {{ 'selected' if movie.get('genre') == 'Sci-Fi' else '' }}>Sci-Fi</option>
+                            <option value="Animation" {{ 'selected' if movie.get('genre') == 'Animation' else '' }}>Animation</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="duration" class="form-label">Duration *</label>
                         <input type="text" id="duration" name="duration" class="form-control" 
-                               value="{{ movie.duration }}" required>
+                               value="{{ movie.get('duration', '') }}" placeholder="e.g., 2h 30min" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="release_date" class="form-label">Release Date</label>
                         <input type="date" id="release_date" name="release_date" class="form-control" 
-                               value="{{ movie.release_date }}">
+                               value="{{ movie.get('release_date', '') }}">
                     </div>
                     
                     <div class="form-group">
                         <label for="ticket_price" class="form-label">Ticket Price (Rs.)</label>
                         <input type="number" id="ticket_price" name="ticket_price" class="form-control" 
-                               value="{{ movie.ticket_price }}" min="0" step="10">
+                               value="{{ movie.get('ticket_price', 300) }}" min="0" step="10">
                     </div>
                     
                     <div class="form-group">
-                        <label for="trailer_link" class="form-label">Trailer Link</label>
+                        <label for="language" class="form-label">Language</label>
+                        <input type="text" id="language" name="language" class="form-control" 
+                               value="{{ movie.get('language', '') }}" placeholder="e.g., English, Hindi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="status" class="form-label">Status</label>
+                        <select id="status" name="status" class="form-control form-select">
+                            <option value="Now Showing" {{ 'selected' if movie.get('status') == 'Now Showing' else '' }}>Now Showing</option>
+                            <option value="Coming Soon" {{ 'selected' if movie.get('status') == 'Coming Soon' else '' }}>Coming Soon</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trailer_link" class="form-label">Trailer URL</label>
                         <input type="url" id="trailer_link" name="trailer_link" class="form-control" 
-                               value="{{ movie.trailer_link or '' }}">
+                               value="{{ movie.get('trailer_link', movie.get('trailer_url', '')) }}" 
+                               placeholder="https://youtube.com/watch?v=...">
+                        <small style="color: var(--text-muted); font-size: 0.8rem;">
+                            Enter YouTube link - will be auto-converted to embed format
+                        </small>
                     </div>
                     
                     <div class="form-group full-width">
                         <label class="form-label">Show Times</label>
-                        <div class="showtimes-input">
-                            <input type="time" id="new-showtime" class="form-control">
-                            <button type="button" class="btn btn-secondary" onclick="addShowtime()">
-                                <i class="fas fa-plus"></i> Add
-                            </button>
-                        </div>
-                        <div class="showtimes-list" id="showtimes-list">
-                            {% for time in movie.showtimes %}
-                            <span class="showtime-tag">
-                                {{ time }}
-                                <button type="button" onclick="removeShowtime('{{ time }}')">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </span>
+                        <div class="showtimes-grid" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            {% for time in fixed_show_times %}
+                            <label class="showtime-checkbox" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" name="showtimes" value="{{ time }}"
+                                       {{ 'checked' if time in movie.get('showtimes', []) else '' }}>
+                                <span class="showtime-label">{{ time|format_time }}</span>
+                            </label>
                             {% endfor %}
                         </div>
-                        <input type="hidden" name="showtimes" id="showtimes" 
-                               value="{{ movie.showtimes|tojson }}">
                     </div>
                     
                     <div class="form-group full-width">
                         <label for="description" class="form-label">Description</label>
                         <textarea id="description" name="description" class="form-control" 
-                                  rows="4">{{ movie.description or '' }}</textarea>
+                                  rows="4">{{ movie.get('description', '') }}</textarea>
                     </div>
                     
                     <div class="form-group full-width">
@@ -222,7 +232,7 @@
                 </div>
                 
                 <div class="form-actions">
-                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    <a href="{{ url_for('admin_movies') }}" class="btn btn-secondary">
                         Cancel
                     </a>
                     <button type="submit" class="btn btn-primary">
@@ -237,38 +247,7 @@
 
 {% block extra_js %}
 <script>
-    let showtimes = {{ movie.showtimes|tojson|safe }};
-
-    function addShowtime() {
-        const input = document.getElementById('new-showtime');
-        const time = input.value;
-        
-        if (time && !showtimes.includes(time)) {
-            showtimes.push(time);
-            updateShowtimesDisplay();
-            input.value = '';
-        }
-    }
-
-    function removeShowtime(time) {
-        showtimes = showtimes.filter(s => s !== time);
-        updateShowtimesDisplay();
-    }
-
-    function updateShowtimesDisplay() {
-        const list = document.getElementById('showtimes-list');
-        const input = document.getElementById('showtimes');
-        
-        list.innerHTML = showtimes.map(time => `
-            <span class="showtime-tag">
-                ${time}
-                <button type="button" onclick="removeShowtime('${time}')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </span>
-        `).join('');
-        
-        input.value = JSON.stringify(showtimes);
-    }
+    // Showtimes are handled via checkboxes now
+    console.log('Edit movie page loaded');
 </script>
 {% endblock %}

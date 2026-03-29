@@ -191,6 +191,168 @@
         background: rgba(229, 9, 20, 0.1);
     }
 
+    /* ========================================
+       PREMIUM SHOWTIME SELECTOR STYLES
+       ======================================== */
+    
+    .showtimes-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .showtimes-header .clock-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #e50914, #ff6b6b);
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title .clock-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #e50914, #ff6b6b);
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .showtime-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .showtime-card {
+        position: relative;
+        padding: 1.25rem 1rem;
+        background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.9));
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        color: var(--text-primary);
+        text-decoration: none;
+        display: block;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .showtime-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(229, 9, 20, 0.15), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 14px;
+    }
+
+    .showtime-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        border-color: rgba(229, 9, 20, 0.5);
+        box-shadow: 0 12px 40px rgba(229, 9, 20, 0.25);
+        color: var(--text-primary);
+    }
+
+    .showtime-card:hover::before {
+        opacity: 1;
+    }
+
+    .showtime-card .showtime-time {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+        transition: color 0.3s ease;
+    }
+
+    .showtime-card .showtime-status {
+        font-size: 0.75rem;
+        color: var(--success);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .showtime-card .showtime-format {
+        display: inline-block;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    /* Animation */
+    @keyframes showtimePulse {
+        0% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+    }
+
+    .showtime-card:hover {
+        animation: showtimePulse 1.5s infinite;
+    }
+
+    @media (max-width: 768px) {
+        .showtime-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .showtime-card {
+            padding: 1rem 0.75rem;
+            border-radius: 12px;
+        }
+
+        .showtime-card .showtime-time {
+            font-size: 1.3rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .showtime-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .showtime-card {
+            padding: 0.75rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        .showtime-card .showtime-time {
+            font-size: 1.1rem;
+        }
+
+        .showtime-card .showtime-status {
+            font-size: 0.6rem;
+        }
+    }
+
     @media (max-width: 992px) {
         .movie-details-content {
             grid-template-columns: 200px 1fr;
@@ -256,7 +418,7 @@
                     
                     <div class="movie-details-meta">
                         <span><i class="fas fa-clock"></i> {{ movie.duration }}</span>
-                        <span><i class="fas fa-calendar"></i> {{ movie.release_date }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ movie.release_date | format_date }}</span>
                         <span class="movie-rating-badge"><i class="fas fa-star"></i> 4.5</span>
                     </div>
                     
@@ -267,7 +429,7 @@
                     <p class="movie-description">{{ movie.description }}</p>
                     
                     <div class="movie-details-actions">
-                        <a href="{{ url_for('booking', movie_id=str(movie._id)) }}" class="btn btn-primary btn-lg">
+                        <a href="{{ url_for('booking', movie_id=movie['_id']) }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-ticket-alt"></i>
                             Book Tickets
                         </a>
@@ -305,11 +467,17 @@
         
         {% if movie.showtimes %}
         <div class="showtimes-section">
-            <h2 class="section-title">Available Showtimes</h2>
-            <div class="showtimes-grid">
+            <div class="showtimes-header">
+                <div class="clock-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h2 class="section-title">Available Showtimes</h2>
+            </div>
+            <div class="showtime-grid">
                 {% for showtime in movie.showtimes %}
-                <a href="{{ url_for('booking', movie_id=str(movie._id)) }}?showtime={{ showtime }}" class="showtime-btn">
-                    {{ showtime }}
+                <a href="{{ url_for('booking', movie_id=movie['_id']) }}?showtime={{ showtime }}" class="showtime-card">
+                    <div class="showtime-time">{{ showtime|format_time }}</div>
+                    <div class="showtime-status">Available</div>
                 </a>
                 {% endfor %}
             </div>

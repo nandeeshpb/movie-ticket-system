@@ -62,7 +62,7 @@
                 <h3 style="margin-bottom: 1rem;">Account Information</h3>
                 <div class="info-row">
                     <span class="info-label">Member Since</span>
-                    <span class="info-value">{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}</span>
+                    <span class="info-value">{{ user.created_at|format_date if user.created_at else 'N/A' }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Account Status</span>

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Theater - MovieBook Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+    
+    .form-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+    }
+    
+    .form-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .form-header h1 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .form-section h4 {
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
+    }
+    
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    .pricing-card {
+        background: var(--lighter-bg);
+        padding: 1rem;
+        border-radius: var(--border-radius-sm);
+        text-align: center;
+    }
+    
+    .pricing-card.silver { border-left: 3px solid #C0C0C0; }
+    .pricing-card.gold { border-left: 3px solid #FFD700; }
+    .pricing-card.platinum { border-left: 3px solid #E5E4E2; }
+    
+    .seat-preview {
+        background: var(--lighter-bg);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .seat-preview-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: center;
+    }
+    
+    .seat-preview-row {
+        display: flex;
+        gap: 0.25rem;
+    }
+    
+    .seat-preview-seat {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        font-size: 0.6rem;
+    }
+    
+    .seat-preview-seat.silver { background: #C0C0C0; color: #333; }
+    .seat-preview-seat.gold { background: #FFD700; color: #333; }
+    .seat-preview-seat.platinum { background: #E5E4E2; color: #333; }
+    
+    .seat-preview-screen {
+        width: 60%;
+        height: 20px;
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2));
+        border-radius: 50%;
+        margin-bottom: 1rem;
+    }
+    
+    .seat-preview-label {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 1rem;
+    }
+    
+    @media (max-width: 576px) {
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1><i class="fas fa-edit"></i> Edit Theater</h1>
+                <p class="text-muted">Update theater details and seat layout</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('edit_theater', theater_id=theater['_id']) }}">
+                <div class="form-section">
+                    <h4><i class="fas fa-info-circle"></i> Theater Details</h4>
+                    
+                    <div class="form-group mb-3">
+                        <label for="name">Theater Name *</label>
+                        <input type="text" name="name" id="name" class="form-control" value="{{ theater.name }}" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="location">Location *</label>
+                        <input type="text" name="location" id="location" class="form-control" value="{{ theater.location }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4><i class="fas fa-chair"></i> Seat Configuration</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="total_rows">Total Rows</label>
+                                <input type="number" name="total_rows" id="total_rows" class="form-control" value="{{ theater.total_rows }}" min="2" max="15" onchange="updateSeatPreview()">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group">
+                                <label for="seats_per_row">Seats per Row</label>
+                                <input type="number" name="seats_per_row" id="seats_per_row" class="form-control" value="{{ theater.seats_per_row }}" min="5" max="20" onchange="updateSeatPreview()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="total_seats">Total Seats (Auto-calculated)</label>
+                        <input type="number" name="total_seats" id="total_seats" class="form-control" value="{{ theater.total_seats }}" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4><i class="fas fa-tags"></i> Seat Pricing</h4>
+                    
+                    <div class="pricing-grid">
+                        <div class="pricing-card silver">
+                            <div class="form-group mb-2">
+                                <label>Silver</label>
+                                <input type="number" name="silver_price" class="form-control" value="{{ theater.get('seat_pricing', {}).get('silver', 200) }}" min="100">
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Rows 1-2</div>
+                        </div>
+                        <div class="pricing-card gold">
+                            <div class="form-group mb-2">
+                                <label>Gold</label>
+                                <input type="number" name="gold_price" class="form-control" value="{{ theater.get('seat_pricing', {}).get('gold', 350) }}" min="150">
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Rows 3-5</div>
+                        </div>
+                        <div class="pricing-card platinum">
+                            <div class="form-group mb-2">
+                                <label>Platinum</label>
+                                <input type="number" name="platinum_price" class="form-control" value="{{ theater.get('seat_pricing', {}).get('platinum', 500) }}" min="200">
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Rows 6-8</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4><i class="fas fa-eye"></i> Seat Preview</h4>
+                    <div class="seat-preview">
+                        <div class="seat-preview-screen"></div>
+                        <div class="seat-preview-grid" id="seatPreview"></div>
+                        <div class="seat-preview-label" id="seatPreviewLabel"></div>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Theater
+                    </button>
+                    <a href="{{ url_for('manage_theaters') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateSeatPreview() {
+    const totalRows = parseInt(document.getElementById('total_rows').value) || 8;
+    const seatsPerRow = parseInt(document.getElementById('seats_per_row').value) || 12;
+    
+    // Update total seats
+    document.getElementById('total_seats').value = totalRows * seatsPerRow;
+    
+    // Update preview label
+    document.getElementById('seatPreviewLabel').textContent = `${totalRows} rows × ${seatsPerRow} seats = ${totalRows * seatsPerRow} total`;
+    
+    // Generate seat preview
+    const preview = document.getElementById('seatPreview');
+    let html = '';
+    
+    for (let row = 0; row < totalRows; row++) {
+        const rowLetter = String.fromCharCode(65 + row);
+        
+        if (row < 2) {
+            category = 'silver';
+        } else if (row < 5) {
+            category = 'gold';
+        } else {
+            category = 'platinum';
+        }
+        
+        html += '<div class="seat-preview-row">';
+        for (let seat = 1; seat <= seatsPerRow; seat++) {
+            html += `<div class="seat-preview-seat ${category}"></div>`;
+        }
+        html += '</div>';
+    }
+    
+    preview.innerHTML = html;
+}
+
+// Initialize preview on load
+updateSeatPreview();
+</script>
+{% endblock %}

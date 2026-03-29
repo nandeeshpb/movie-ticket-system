@@ -9,49 +9,36 @@
         min-height: 100vh;
         background: var(--dark-bg);
     }
-
-    .booking-header {
-        margin-bottom: 2rem;
-    }
-
-    .booking-header h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .booking-header p {
-        color: var(--text-muted);
-    }
-
+    
     .booking-container {
         display: grid;
         grid-template-columns: 1fr 380px;
         gap: 2rem;
     }
-
+    
     .booking-main {
         background: var(--card-bg);
         border-radius: var(--border-radius);
         padding: 2rem;
     }
-
+    
     .booking-section {
         margin-bottom: 2rem;
     }
-
+    
     .booking-section h3 {
         font-size: 1.2rem;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
+    
     .date-time-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 1rem;
     }
-
+    
     .date-btn, .time-btn {
         padding: 1rem;
         background: var(--lighter-bg);
@@ -62,302 +49,287 @@
         transition: var(--transition);
         text-align: center;
     }
-
+    
     .date-btn:hover, .time-btn:hover {
         border-color: var(--primary-color);
     }
-
+    
     .date-btn.selected, .time-btn.selected {
         background: var(--primary-color);
         border-color: var(--primary-color);
     }
-
+    
     .date-btn .day {
         font-size: 0.85rem;
         color: var(--text-muted);
     }
-
-    .date-btn .date {
-        font-size: 1.3rem;
-        font-weight: 700;
-    }
-
+    
     .date-btn.selected .day,
     .date-btn.selected .date {
         color: white;
     }
-
+    
+    .date-btn .date {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+    
+    /* Theater Selection */
+    .theater-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .theater-card {
+        background: var(--lighter-bg);
+        border: 2px solid transparent;
+        border-radius: var(--border-radius-sm);
+        padding: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .theater-card:hover {
+        border-color: var(--primary-color);
+    }
+    
+    .theater-card.selected {
+        border-color: var(--primary-color);
+        background: rgba(229, 9, 20, 0.1);
+    }
+    
+    .theater-card h4 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .theater-card p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
     /* Seat Layout */
     .screen {
         background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1));
-        padding: 1.5rem;
-        text-align: center;
-        border-radius: var(--border-radius) var(--border-radius) 0 0;
-        margin-bottom: 2rem;
+        height: 50px;
+        border-radius: 50%;
+        width: 80%;
+        margin: 0 auto 2rem;
         position: relative;
     }
-
+    
     .screen::after {
         content: '';
         position: absolute;
-        bottom: -40px;
+        top: 50%;
         left: 50%;
-        transform: translateX(-50%);
-        width: 70%;
-        height: 40px;
-        background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-        filter: blur(5px);
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.2);
     }
-
+    
     .screen-title {
         font-size: 1rem;
+        text-align: center;
         color: var(--text-muted);
-        letter-spacing: 4px;
-        text-transform: uppercase;
+        margin-bottom: 2rem;
     }
-
+    
     .seat-legend {
         display: flex;
         justify-content: center;
         gap: 2rem;
-        margin-top: 2rem;
+        margin-bottom: 2rem;
         flex-wrap: wrap;
     }
-
+    
     .legend-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
     }
-
+    
     .legend-seat {
         width: 30px;
         height: 30px;
-        border-radius: 8px 8px 12px 12px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
-
+    
     .legend-seat.available {
-        background: rgba(255, 255, 255, 0.15);
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: var(--lighter-bg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
-
+    
     .legend-seat.selected {
         background: var(--primary-color);
-        border-color: var(--primary-color);
+        color: white;
     }
-
+    
     .legend-seat.booked {
-        background: var(--text-muted);
-        opacity: 0.5;
+        background: #666;
+        cursor: not-allowed;
     }
-
-    .legend-seat.vip {
-        border-color: var(--warning);
-    }
-
+    
+    .legend-seat.silver { background: #C0C0C0; color: #333; }
+    .legend-seat.gold { background: #FFD700; color: #333; }
+    .legend-seat.platinum { background: #E5E4E2; color: #333; }
+    
     .seats-container {
         display: flex;
         flex-direction: column;
+        gap: 0.5rem;
         align-items: center;
-        gap: 0.6rem;
-        padding: 2rem;
     }
-
+    
     .seat-row {
         display: flex;
         gap: 0.5rem;
         align-items: center;
     }
-
+    
     .row-label {
-        width: 25px;
+        width: 30px;
         font-weight: 600;
         color: var(--text-muted);
-        font-size: 0.85rem;
     }
-
+    
     .seat {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px 8px 12px 12px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid transparent;
-        cursor: pointer;
-        transition: var(--transition);
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
-        color: transparent;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        border: 1px solid transparent;
     }
-
-    .seat:hover:not(.booked):not(.selected) {
-        background: rgba(255, 255, 255, 0.25);
-        transform: scale(1.1);
+    
+    .seat.available {
+        background: var(--lighter-bg);
     }
-
+    
+    .seat.available:hover {
+        border-color: var(--primary-color);
+    }
+    
     .seat.selected {
         background: var(--primary-color);
-        border-color: var(--primary-color);
         color: white;
     }
-
+    
     .seat.booked {
-        background: var(--text-muted);
+        background: #666;
         cursor: not-allowed;
-        opacity: 0.4;
+        opacity: 0.6;
     }
-
-    .seat.vip {
-        border-color: var(--warning);
-    }
-
-    .seat.vip.selected {
-        background: var(--warning);
-        border-color: var(--warning);
-        color: #000;
-    }
-
-    .seat-gap {
-        width: 20px;
-    }
-
+    
+    .seat.silver { background: #C0C0C0; color: #333; }
+    .seat.gold { background: #FFD700; color: #333; }
+    .seat.platinum { background: #E5E4E2; color: #333; }
+    
+    .seat.selected.silver { background: #a0a0a0; color: white; border-color: #808080; }
+    .seat.selected.gold { background: #e6c200; color: white; border-color: #bfa100; }
+    .seat.selected.platinum { background: #c5c5c5; color: white; border-color: #a5a5a5; }
+    
     /* Booking Summary */
     .booking-summary {
         background: var(--card-bg);
         border-radius: var(--border-radius);
-        padding: 2rem;
+        padding: 1.5rem;
+        height: fit-content;
         position: sticky;
         top: 100px;
-        height: fit-content;
     }
-
+    
     .summary-movie {
         display: flex;
         gap: 1rem;
+        margin-bottom: 1.5rem;
         padding-bottom: 1.5rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 1.5rem;
     }
-
+    
     .summary-movie img {
         width: 80px;
-        height: 110px;
+        height: 120px;
         object-fit: cover;
         border-radius: var(--border-radius-sm);
     }
-
+    
     .summary-movie-info h4 {
-        font-size: 1rem;
         margin-bottom: 0.5rem;
     }
-
+    
     .summary-movie-info p {
-        font-size: 0.85rem;
         color: var(--text-muted);
-        margin: 0;
+        font-size: 0.9rem;
     }
-
+    
     .summary-details {
         margin-bottom: 1.5rem;
     }
-
+    
     .summary-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 0.8rem;
-        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
     }
-
-    .summary-row .label {
+    
+    .summary-row span:first-child {
         color: var(--text-muted);
     }
-
-    .summary-row .value {
-        font-weight: 600;
-    }
-
-    .selected-seats {
-        margin: 1rem 0;
+    
+    .summary-seats {
+        background: var(--lighter-bg);
         padding: 1rem;
-        background: rgba(255, 255, 255, 0.05);
         border-radius: var(--border-radius-sm);
+        margin-bottom: 1.5rem;
     }
-
-    .selected-seats-label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-    }
-
+    
     .selected-seats-list {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
+        margin-top: 0.5rem;
     }
-
-    .selected-seat {
+    
+    .seat-tag {
         background: var(--primary-color);
-        padding: 0.3rem 0.7rem;
-        border-radius: 15px;
-        font-size: 0.8rem;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
     }
-
-    .summary-total {
-        display: flex;
-        justify-content: space-between;
+    
+    .total-section {
         padding-top: 1rem;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 1.3rem;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.2rem;
         font-weight: 700;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
-
-    .summary-total .amount {
-        color: var(--success);
-    }
-
-    .booking-summary .btn {
-        width: 100%;
-        padding: 1rem;
-        font-size: 1rem;
-    }
-
-    .no-selection {
-        text-align: center;
-        padding: 2rem;
-        color: var(--text-muted);
-    }
-
-    @media (max-width: 992px) {
+    
+    @media (max-width: 900px) {
         .booking-container {
             grid-template-columns: 1fr;
         }
-
+        
         .booking-summary {
             position: static;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .seat {
-            width: 28px;
-            height: 28px;
-        }
-
-        .seat-legend {
-            gap: 1rem;
-        }
-
-        .legend-item {
-            font-size: 0.75rem;
-        }
-
-        .legend-seat {
-            width: 20px;
-            height: 20px;
         }
     }
 </style>
@@ -366,233 +338,422 @@
 {% block content %}
 <div class="booking-page">
     <div class="container">
-        <div class="booking-header">
-            <h1>Book Tickets</h1>
-            <p>{{ movie.title }} - Select your seats</p>
-        </div>
-        
-        <form method="POST" action="{{ url_for('booking', movie_id=movie._id) }}" id="booking-form">
-            <div class="booking-container">
-                <div class="booking-main">
-                    <!-- Date Selection -->
-                    <div class="booking-section">
-                        <h3><i class="fas fa-calendar"></i> Select Date</h3>
-                        <div class="date-time-grid">
-                            {% for date in available_dates %}
-                            <button type="button" class="date-btn {{ 'selected' if loop.first else '' }}" 
-                                    data-date="{{ date }}" onclick="selectDate(this)">
-                                <div class="day">{{ date.strftime('%a') }}</div>
-                                <div class="date">{{ date.day }}</div>
-                            </button>
-                            {% endfor %}
+        <div class="booking-container">
+            <div class="booking-main">
+                <!-- Theater Selection -->
+                <div class="booking-section" id="theaterSection">
+                    <h3><i class="fas fa-building"></i> Select Theater</h3>
+                    <div id="theatersGrid" class="theater-grid">
+                        {% for theater in theaters %}
+                        <div class="theater-card" data-theater-id="{{ theater['_id'] }}" onclick="selectTheater('{{ theater['_id'] }}', this)">
+                            <h4>{{ theater.name }}</h4>
+                            <p>{{ theater.location }}</p>
+                            <p style="margin-top: 0.5rem;">
+                                <span class="pricing-badge silver">S: Rs.{{ theater.get('seat_pricing', {}).get('silver', 200) }}</span>
+                                <span class="pricing-badge gold">G: Rs.{{ theater.get('seat_pricing', {}).get('gold', 350) }}</span>
+                                <span class="pricing-badge platinum">P: Rs.{{ theater.get('seat_pricing', {}).get('platinum', 500) }}</span>
+                            </p>
                         </div>
-                        <input type="hidden" name="show_date" id="show_date" value="{{ available_dates[0] if available_dates else '' }}">
-                    </div>
-                    
-                    <!-- Time Selection -->
-                    <div class="booking-section">
-                        <h3><i class="fas fa-clock"></i> Select Show Time</h3>
-                        <div class="date-time-grid">
-                            {% for time in showtimes %}
-                            <button type="button" class="time-btn {{ 'selected' if loop.first else '' }}" 
-                                    data-time="{{ time }}" onclick="selectTime(this)">
-                                {{ time }}
-                            </button>
-                            {% endfor %}
-                        </div>
-                        <input type="hidden" name="show_time" id="show_time" value="{{ showtimes[0] if showtimes else '' }}">
-                    </div>
-                    
-                    <!-- Seat Selection -->
-                    <div class="booking-section">
-                        <h3><i class="fas fa-chair"></i> Select Seats</h3>
-                        
-                        <div class="screen">
-                            <div class="screen-title">Screen</div>
-                        </div>
-                        
-                        <div class="seats-container" id="seat-layout">
-                            {% for row in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] %}
-                            <div class="seat-row">
-                                <span class="row-label">{{ row }}</span>
-                                {% for seat in range(1, 11) %}
-                                <button type="button" class="seat {{ 'vip' if row in ['A', 'B'] else '' }}" 
-                                        data-seat="{{ row }}{{ seat }}" 
-                                        onclick="toggleSeat(this)"
-                                        title="{{ row }}{{ seat }}">
-                                </button>
-                                {% endfor %}
-                                <span class="row-label">{{ row }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        
-                        <div class="seat-legend">
-                            <div class="legend-item">
-                                <div class="legend-seat available"></div>
-                                <span>Available</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-seat selected"></div>
-                                <span>Selected</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-seat booked"></div>
-                                <span>Booked</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-seat vip"></div>
-                                <span>VIP</span>
-                            </div>
-                        </div>
-                        
-                        <input type="hidden" name="seats" id="selected-seats" value="">
+                        {% endfor %}
                     </div>
                 </div>
                 
-                <!-- Booking Summary -->
-                <div class="booking-summary">
-                    <div class="summary-movie">
-                        <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
-                        <div class="summary-movie-info">
-                            <h4>{{ movie.title }}</h4>
-                            <p>{{ movie.genre }} | {{ movie.duration }}</p>
-                            <p class="ticket-price-value" style="display: none;">{{ movie.ticket_price }}</p>
+                <!-- Date Selection -->
+                <div class="booking-section" id="dateSection" style="display: none;">
+                    <h3><i class="fas fa-calendar"></i> Select Date</h3>
+                    <div class="date-time-grid" id="datesGrid">
+                        {% for date in available_dates %}
+                        <div class="date-btn" data-date="{{ date.strftime('%Y-%m-%d') }}" onclick="selectDate('{{ date.strftime('%Y-%m-%d') }}', this)">
+                            <div class="day">{{ date.strftime('%a') }}</div>
+                            <div class="date">{{ date.strftime('%d') }}</div>
+                            <div class="day">{{ date.strftime('%b') }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Time Selection -->
+                <div class="booking-section" id="timeSection" style="display: none;">
+                    <h3><i class="fas fa-clock"></i> Select Show Time</h3>
+                    <div class="date-time-grid" id="timesGrid">
+                        {% for time in showtimes %}
+                        <div class="time-btn" data-time="{{ time }}" onclick="selectTime('{{ time }}', this)">
+                            {{ time|format_time }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Seat Selection -->
+                <div class="booking-section" id="seatSection" style="display: none;">
+                    <h3><i class="fas fa-chair"></i> Select Seats</h3>
+                    
+                    <div class="screen">
+                        <div class="screen-title">Screen</div>
+                    </div>
+                    
+                    <div class="seat-legend">
+                        <div class="legend-item">
+                            <div class="legend-seat available"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat selected"></div>
+                            <span>Selected</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat booked"></div>
+                            <span>Booked</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat silver"></div>
+                            <span>Silver (Rs.{{ seat_categories.silver.price }})</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat gold"></div>
+                            <span>Gold (Rs.{{ seat_categories.gold.price }})</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat platinum"></div>
+                            <span>Platinum (Rs.{{ seat_categories.platinum.price }})</span>
                         </div>
                     </div>
                     
-                    <div class="summary-details">
-                        <div class="summary-row">
-                            <span class="label">Date</span>
-                            <span class="value" id="summary-date">{{ available_dates[0].strftime('%d %b %Y') if available_dates else '-' }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">Time</span>
-                            <span class="value" id="summary-time">{{ showtimes[0] if showtimes else '-' }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">Ticket Price</span>
-                            <span class="value">Rs. {{ movie.ticket_price }}</span>
-                        </div>
+                    <div class="seats-container" id="seatsContainer">
+                        <!-- Seats will be loaded here dynamically -->
                     </div>
-                    
-                    <div class="selected-seats">
-                        <div class="selected-seats-label">Selected Seats</div>
-                        <div class="selected-seats-list" id="selected-seats-display">
-                            <span style="color: var(--text-muted); font-size: 0.9rem;">No seats selected</span>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-total">
-                        <span>Total</span>
-                        <span class="amount" id="total-price">Rs. 0</span>
-                    </div>
-                    
-                    {% if current_user.is_authenticated %}
-                    <button type="submit" class="btn btn-primary" id="confirm-booking">
-                        <i class="fas fa-check"></i>
-                        Confirm Booking
-                    </button>
-                    {% else %}
-                    <a href="{{ url_for('login') }}?next={{ request.path }}" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Login to Book
-                    </a>
-                    {% endif %}
                 </div>
             </div>
-        </form>
+            
+            <!-- Booking Summary -->
+            <div class="booking-summary">
+                <div class="summary-movie">
+                    <img src="{{ url_for('static', filename='uploads/' + movie.poster) }}" alt="{{ movie.title }}">
+                    <div class="summary-movie-info">
+                        <h4>{{ movie.title }}</h4>
+                        <p>{{ movie.genre }} | {{ movie.duration }}</p>
+                    </div>
+                </div>
+                
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Theater</span>
+                        <span id="summaryTheater">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Date</span>
+                        <span id="summaryDate">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Time</span>
+                        <span id="summaryTime">-</span>
+                    </div>
+                </div>
+                
+                <div class="summary-seats">
+                    <div>Selected Seats (<span id="seatCount">0</span>)</div>
+                    <div class="selected-seats-list" id="selectedSeatsList"></div>
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span id="totalAmount">Rs. 0</span>
+                    </div>
+                    <button class="btn btn-primary w-100" id="bookNowBtn" onclick="confirmBooking()" disabled>
+                        <i class="fas fa-ticket-alt"></i> Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<!-- Hidden form for booking submission -->
+<form id="bookingForm" method="POST" action="{{ url_for('booking', movie_id=movie['_id']) }}">
+    <input type="hidden" name="theater_id" id="inputTheaterId">
+    <input type="hidden" name="show_date" id="inputShowDate">
+    <input type="hidden" name="show_time" id="inputShowTime">
+    <input type="hidden" name="seats" id="inputSeats">
+    <input type="hidden" name="seat_count" id="inputSeatCount">
+    <input type="hidden" name="total_amount" id="inputTotalAmount">
+</form>
+
 <script>
+    let selectedTheater = null;
+    let selectedDate = null;
+    let selectedTime = null;
     let selectedSeats = [];
-    const ticketPrice = {{ movie.ticket_price|tojson }};
-
-    function selectDate(btn) {
-        document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        document.getElementById('show_date').value = btn.dataset.date;
-        document.getElementById('summary-date').textContent = btn.dataset.date;
+    let theaterInfo = null;
+    let bookedSeats = [];
+    
+    // Initialize data from server
+    window.theatersData = {{ theaters|tojson|safe }};
+    
+    // Load theater info when theater is selected
+    async function loadTheaterInfo() {
+        const theaterId = selectedTheater;
         
-        // Load booked seats for this date
+        if (!theaterId) return;
+        
+        try {
+            const response = await fetch(`/get_theater_info/${theaterId}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                theaterInfo = data.theater;
+                renderSeats();
+            }
+        } catch (error) {
+            console.error('Error loading theater info:', error);
+        }
+    }
+    
+    // Load booked seats when date and time are selected
+    async function loadBookedSeats() {
+        if (!selectedTheater || !selectedDate || !selectedTime) return;
+        
+        try {
+            const movieId = '{{ movie["_id"] }}';
+            const response = await fetch(`/get_booked_seats/${movieId}/${selectedTheater}/${selectedDate}/${selectedTime}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                bookedSeats = data.booked_seats;
+                renderSeats();
+            }
+        } catch (error) {
+            console.error('Error loading booked seats:', error);
+        }
+    }
+    
+    // Select theater
+    function selectTheater(theaterId, element) {
+        // Remove previous selection
+        document.querySelectorAll('.theater-card').forEach(card => card.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        selectedTheater = theaterId;
+        
+        // Get theater info
+        const allTheaters = window.theatersData || [];
+        const theater = allTheaters.find(t => t._id === theaterId);
+        
+        document.getElementById('summaryTheater').textContent = theater ? theater.name : '-';
+        
+        // Reset other selections
+        selectedDate = null;
+        selectedTime = null;
+        selectedSeats = [];
+        
+        document.getElementById('dateSection').style.display = 'block';
+        document.getElementById('timeSection').style.display = 'none';
+        document.getElementById('seatSection').style.display = 'none';
+        
+        document.getElementById('summaryDate').textContent = '-';
+        document.getElementById('summaryTime').textContent = '-';
+        
+        updateSummary();
+        
+        // Load theater info for seat rendering
+        loadTheaterInfo();
+    }
+    
+    // Select date
+    function selectDate(date, element) {
+        // Remove previous selection
+        document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        selectedDate = date;
+        
+        // Format date for display
+        const dateObj = new Date(date);
+        document.getElementById('summaryDate').textContent = dateObj.toLocaleDateString('en-IN', { 
+            weekday: 'short', 
+            day: 'numeric', 
+            month: 'short' 
+        });
+        
+        // Reset time and seats
+        selectedTime = null;
+        selectedSeats = [];
+        
+        document.getElementById('timeSection').style.display = 'block';
+        document.getElementById('seatSection').style.display = 'none';
+        
+        document.getElementById('summaryTime').textContent = '-';
+        
+        updateSummary();
         loadBookedSeats();
     }
-
-    function selectTime(btn) {
-        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        document.getElementById('show_time').value = btn.dataset.time;
-        document.getElementById('summary-time').textContent = btn.dataset.time;
+    
+    // Select time
+    function selectTime(time, element) {
+        // Remove previous selection
+        document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
         
-        // Load booked seats for this time
+        selectedTime = time;
+        
+        // Format time for display
+        const [hours, minutes] = time.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        document.getElementById('summaryTime').textContent = `${displayHour}:${minutes} ${ampm}`;
+        
+        // Show seat section
+        document.getElementById('seatSection').style.display = 'block';
+        
+        // Reset seats
+        selectedSeats = [];
+        
+        updateSummary();
         loadBookedSeats();
     }
-
-    function toggleSeat(seat) {
-        if (seat.classList.contains('booked')) return;
+    
+    // Render seats
+    function renderSeats() {
+        if (!theaterInfo) return;
         
-        const seatId = seat.dataset.seat;
+        const container = document.getElementById('seatsContainer');
+        const totalRows = theaterInfo.total_rows;
+        const seatsPerRow = theaterInfo.seats_per_row;
+        const seatCategories = theaterInfo.seat_categories || {};
         
-        if (seat.classList.contains('selected')) {
-            seat.classList.remove('selected');
-            selectedSeats = selectedSeats.filter(s => s !== seatId);
+        let html = '';
+        
+        for (let row = 0; row < totalRows; row++) {
+            const rowLetter = String.fromCharCode(65 + row);
+            html += `<div class="seat-row">`;
+            html += `<div class="row-label">${rowLetter}</div>`;
+            
+            for (let seatNum = 1; seatNum <= seatsPerRow; seatNum++) {
+                const seatId = `${rowLetter}${seatNum}`;
+                const category = seatCategories[seatId] || 'silver';
+                const isBooked = bookedSeats.includes(seatId);
+                const isSelected = selectedSeats.includes(seatId);
+                
+                let seatClass = 'seat';
+                if (isBooked) {
+                    seatClass += ' booked';
+                } else if (isSelected) {
+                    seatClass += ` selected ${category}`;
+                } else {
+                    seatClass += ` available ${category}`;
+                }
+                
+                html += `<div class="${seatClass}" 
+                            data-seat="${seatId}" 
+                            data-category="${category}"
+                            ${!isBooked ? `onclick="toggleSeat('${seatId}', '${category}')"` : ''}>
+                            ${seatNum}
+                        </div>`;
+            }
+            
+            html += `</div>`;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    // Toggle seat selection
+    function toggleSeat(seatId, category) {
+        const index = selectedSeats.indexOf(seatId);
+        
+        if (index > -1) {
+            // Deselect
+            selectedSeats.splice(index, 1);
         } else {
-            seat.classList.add('selected');
+            // Select
             selectedSeats.push(seatId);
         }
         
-        updateSeatsDisplay();
+        renderSeats();
+        updateSummary();
     }
-
-    function updateSeatsDisplay() {
-        document.getElementById('selected-seats').value = JSON.stringify(selectedSeats);
+    
+    // Update summary
+    function updateSummary() {
+        const seatCountEl = document.getElementById('seatCount');
+        const seatsListEl = document.getElementById('selectedSeatsList');
+        const totalEl = document.getElementById('totalAmount');
+        const bookBtn = document.getElementById('bookNowBtn');
         
-        const display = document.getElementById('selected-seats-display');
-        if (selectedSeats.length === 0) {
-            display.innerHTML = '<span style="color: var(--text-muted); font-size: 0.9rem;">No seats selected</span>';
-        } else {
-            display.innerHTML = selectedSeats.map(seat => 
-                `<span class="selected-seat">${seat}</span>`
-            ).join('');
+        seatCountEl.textContent = selectedSeats.length;
+        
+        // Show selected seats
+        seatsListEl.innerHTML = selectedSeats.map(seat => 
+            `<span class="seat-tag">${seat}</span>`
+        ).join('');
+        
+        // Calculate total
+        let total = 0;
+        if (theaterInfo) {
+            const seatCategories = theaterInfo.seat_categories || {};
+            const seatPricing = theaterInfo.seat_pricing || { silver: 200, gold: 350, platinum: 500 };
+            
+            selectedSeats.forEach(seat => {
+                const category = seatCategories[seat] || 'silver';
+                total += seatPricing[category] || 200;
+            });
         }
         
-        const total = selectedSeats.length * ticketPrice;
-        document.getElementById('total-price').textContent = `Rs. ${total}`;
-    }
-
-    function loadBookedSeats() {
-        const movieId = '{{ movie._id }}';
-        const date = document.getElementById('show_date').value;
-        const time = document.getElementById('show_time').value;
+        totalEl.textContent = `Rs. ${total}`;
         
-        if (!date || !time) return;
-        
-        fetch(`/api/get_booked_seats/${movieId}/${date}/${time}`)
-            .then(response => response.json())
-            .then(data => {
-                document.querySelectorAll('.seat').forEach(seat => {
-                    const seatId = seat.dataset.seat;
-                    if (data.seats.includes(seatId)) {
-                        seat.classList.add('booked');
-                        seat.classList.remove('selected');
-                    } else {
-                        seat.classList.remove('booked');
-                    }
-                });
-                
-                // Remove booked seats from selected
-                selectedSeats = selectedSeats.filter(s => !data.seats.includes(s));
-                updateSeatsDisplay();
-            })
-            .catch(error => console.error('Error loading seats:', error));
+        // Enable/disable book button
+        const isValid = selectedTheater && selectedDate && selectedTime && selectedSeats.length > 0;
+        bookBtn.disabled = !isValid;
     }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        loadBookedSeats();
-    });
+    
+    // Confirm booking
+    function confirmBooking() {
+        if (!selectedTheater || !selectedDate || !selectedTime || selectedSeats.length === 0) {
+            alert('Please select all required options and at least one seat');
+            return;
+        }
+        
+        // Set form values
+        document.getElementById('inputTheaterId').value = selectedTheater;
+        document.getElementById('inputShowDate').value = selectedDate;
+        document.getElementById('inputShowTime').value = selectedTime;
+        document.getElementById('inputSeats').value = selectedSeats.join(',');
+        document.getElementById('inputSeatCount').value = selectedSeats.length;
+        
+        // Calculate total
+        let total = 0;
+        if (theaterInfo) {
+            const seatCategories = theaterInfo.seat_categories || {};
+            const seatPricing = theaterInfo.seat_pricing || { silver: 200, gold: 350, platinum: 500 };
+            
+            selectedSeats.forEach(seat => {
+                const category = seatCategories[seat] || 'silver';
+                total += seatPricing[category] || 200;
+            });
+        }
+        document.getElementById('inputTotalAmount').value = total;
+        
+        // Submit form
+        const form = document.getElementById('bookingForm');
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
 </script>
 {% endblock %}

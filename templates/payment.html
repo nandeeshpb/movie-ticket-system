@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - MovieBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+    
+    .payment-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+    }
+    
+    .payment-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .payment-header h1 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-summary {
+        background: var(--lighter-bg);
+        border-radius: var(--border-radius-sm);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .order-summary h3 {
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+    
+    .summary-row.total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 1rem;
+    }
+    
+    .payment-methods {
+        margin-bottom: 2rem;
+    }
+    
+    .payment-methods h3 {
+        margin-bottom: 1rem;
+    }
+    
+    .payment-option {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--lighter-bg);
+        border: 2px solid transparent;
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .payment-option:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .payment-option.selected {
+        border-color: var(--primary-color);
+        background: rgba(229, 9, 20, 0.1);
+    }
+    
+    .payment-option input[type="radio"] {
+        display: none;
+    }
+    
+    .payment-option .icon {
+        width: 40px;
+        height: 40px;
+        background: var(--card-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .payment-option .details h4 {
+        margin-bottom: 0.25rem;
+    }
+    
+    .payment-option .details p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+    
+    .qr-payment {
+        background: var(--lighter-bg);
+        padding: 2rem;
+        border-radius: var(--border-radius-sm);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .qr-payment img {
+        max-width: 200px;
+        margin: 1rem 0;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .action-buttons .btn {
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-page">
+    <div class="container">
+        <div class="payment-container">
+            <div class="payment-header">
+                <h1><i class="fas fa-credit-card"></i> Payment</h1>
+                <p class="text-muted">Complete your booking</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('process_payment') }}" id="paymentForm">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                    
+                    <div class="summary-row">
+                        <span>Movie</span>
+                        <span>{{ movie.title }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Theater</span>
+                        <span>{{ theater.name if theater else booking.theater_name }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Date</span>
+                        <span>{{ booking.show_date }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Show Time</span>
+                        <span>{{ booking.show_time|format_time }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Seats</span>
+                        <span>{{ booking.seats|join(', ') }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Ticket Count</span>
+                        <span>{{ booking.seat_count }}</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total Amount</span>
+                        <span style="color: var(--primary-color);">Rs. {{ booking.total_amount }}</span>
+                    </div>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <h3><i class="fas fa-wallet"></i> Select Payment Method</h3>
+                    
+                    <label class="payment-option" onclick="selectPayment(this, 'upi')">
+                        <input type="radio" name="payment_method" value="upi" required>
+                        <div class="icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="details">
+                            <h4>UPI</h4>
+                            <p>Pay using GPay, PhonePe, Paytm</p>
+                        </div>
+                    </label>
+                    
+                    <label class="payment-option" onclick="selectPayment(this, 'card')">
+                        <input type="radio" name="payment_method" value="card">
+                        <div class="icon"><i class="fas fa-credit-card"></i></div>
+                        <div class="details">
+                            <h4>Debit/Credit Card</h4>
+                            <p>Visa, Mastercard, RuPay</p>
+                        </div>
+                    </label>
+                    
+                    <label class="payment-option" onclick="selectPayment(this, 'netbanking')">
+                        <input type="radio" name="payment_method" value="netbanking">
+                        <div class="icon"><i class="fas fa-university"></i></div>
+                        <div class="details">
+                            <h4>Net Banking</h4>
+                            <p>All major banks supported</p>
+                        </div>
+                    </label>
+                </div>
+                
+                <!-- Dummy QR for payment -->
+                <div class="qr-payment">
+                    <h4><i class="fas fa-qrcode"></i> Scan to Pay</h4>
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Payment QR Code">
+                    <p class="text-muted">Demo QR Code - Payment simulation</p>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="{{ url_for('cancel_booking_session') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="payBtn" disabled>
+                        <i class="fas fa-lock"></i> Pay Rs. {{ booking.total_amount }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectPayment(element, method) {
+    // Remove selected class from all options
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked option
+    element.classList.add('selected');
+    
+    // Check the radio button
+    element.querySelector('input[type="radio"]').checked = true;
+    
+    // Enable pay button
+    document.getElementById('payBtn').disabled = false;
+}
+</script>
+{% endblock %}

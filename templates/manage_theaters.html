@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Theaters - MovieBook Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--dark-bg);
+    }
+    
+    .admin-header {
+        padding: 2rem 0;
+        background: linear-gradient(135deg, var(--card-bg) 0%, var(--darker-bg) 100%);
+        margin-bottom: 2rem;
+    }
+    
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+    
+    .admin-sidebar {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .sidebar-menu li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius-sm);
+        color: var(--text-secondary);
+        transition: var(--transition);
+    }
+    
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+    
+    .sidebar-menu a.active {
+        border-left: 3px solid var(--primary-color);
+    }
+    
+    .admin-content {
+        min-width: 0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    .stat-icon.theaters { background: rgba(156, 39, 176, 0.15); color: #9c27b0; }
+    
+    .admin-section {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .section-header h3 {
+        margin: 0;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+    }
+    
+    th {
+        background: rgba(255, 255, 255, 0.05);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    
+    tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .action-btns {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-badge.active { background: rgba(70, 211, 105, 0.15); color: var(--success); }
+    .status-badge.inactive { background: rgba(229, 9, 20, 0.15); color: var(--error); }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 992px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+        .admin-sidebar {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">
+        <div class="container">
+            <h1><i class="fas fa-building"></i> Manage Theaters</h1>
+            <p>Add, edit, and manage your theaters</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="admin-grid">
+            <aside class="admin-sidebar">
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('add_movie') }}">
+                            <i class="fas fa-plus"></i> Add Movie
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('movies_list') }}">
+                            <i class="fas fa-film"></i> All Movies
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('manage_theaters') }}" class="active">
+                            <i class="fas fa-building"></i> Theaters
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('manage_users') }}">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('all_bookings') }}">
+                            <i class="fas fa-ticket-alt"></i> Bookings
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            
+            <main class="admin-content">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-building"></i> All Theaters</h3>
+                        <a href="{{ url_for('add_theater') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Theater
+                        </a>
+                    </div>
+                    
+                    {% if theaters %}
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Theater Name</th>
+                                    <th>Location</th>
+                                    <th>Total Seats</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for theater in theaters %}
+                                <tr>
+                                    <td><strong>{{ theater.name }}</strong></td>
+                                    <td>{{ theater.location }}</td>
+                                    <td>{{ theater.total_seats }}</td>
+                                    <td>
+                                        <span class="status-badge {{ 'active' if theater.is_active else 'inactive' }}">
+                                            {{ 'Active' if theater.is_active else 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ theater.created_at | format_date }}</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <a href="{{ url_for('edit_theater', theater_id=theater['_id']|string) }}" class="btn btn-sm btn-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ url_for('delete_theater', theater_id=theater['_id']|string) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this theater?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-building"></i>
+                        <p>No theaters added yet</p>
+                        <a href="{{ url_for('add_theater') }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus"></i> Add First Theater
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteTheaterName"></strong>?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="deleteLink" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmDelete(theaterId, theaterName) {
+    document.getElementById('deleteTheaterName').textContent = theaterName;
+    document.getElementById('deleteLink').href = '/admin/delete_theater/' + theaterId;
+    
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %}
+{% endblock %}

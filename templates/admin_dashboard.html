@@ -290,8 +290,18 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url_for('admin_movies') }}">
+                            <i class="fas fa-film"></i> Manage Movies
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url_for('movies_list') }}">
                             <i class="fas fa-film"></i> All Movies
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('manage_theaters') }}">
+                            <i class="fas fa-building"></i> Theaters
                         </a>
                     </li>
                     <li>
@@ -331,6 +341,15 @@
                         <div class="stat-info">
                             <h3>{{ total_movies }}</h3>
                             <p>Total Movies</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(156, 39, 176, 0.15); color: #9c27b0;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ total_theaters }}</h3>
+                            <p>Theaters</p>
                         </div>
                     </div>
                     <div class="stat-card">
